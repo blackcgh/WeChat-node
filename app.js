@@ -2,7 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser')
 
-// const path = require('path');
+const path = require('path');
 // const cookieParser = require('cookie-parser');
 // const logger = require('morgan');
 
@@ -21,7 +21,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // app.use(cookieParser());
-// app.use(express.static(path.join(__dirname, 'public')));
+
+// 静态资源（头像）
+app.use(express.static(path.join(__dirname, 'public')));
 
 // 路由
 app.use('/api/user', userRouter)

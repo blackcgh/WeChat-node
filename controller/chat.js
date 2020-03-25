@@ -1,16 +1,16 @@
 const ChatModel = require('../db/chat')
 
 // 获取聊天列表
-function getList(me, other) {
+function getList(sendOne, receiveOne) {
   const obj = {
     $or: [
       {
-        sendOne: me,
-        receiveOne: other
+        sendOne: sendOne,
+        receiveOne: receiveOne
       },
       {
-        sendOne: other,
-        receiveOne: me
+        sendOne: receiveOne,
+        receiveOne: sendOne
       }
     ]
   }
