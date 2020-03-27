@@ -131,8 +131,9 @@ router.post('/upload', async (req, res, next) => {
   form.uploadDir = './public/images/';
   form.parse(req, (err, fields, files) => {
     const id = Object.keys(files)[0];
-    const avatar = 'http://localhost/images/' + files[id].name;
-    const path = './public/images/' + files[id].name;
+    const avatar = 'http://localhost/images/' + id;
+    // const path = './public/images/' + files[id].name;
+    const path = './public/images/' + id;
     fs.rename(files[id].path, path, async function (err) {
       if (err) console.log(err);
       await upload(id, avatar);

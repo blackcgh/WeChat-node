@@ -1,7 +1,9 @@
 const UserModel = require('../db/user')
+const ChatModel = require('../db/chat')
 
 // 登录
 function login(username, password) {
+  let data = null;
   return UserModel.aggregate([{
       $match: {
         username,
@@ -16,7 +18,29 @@ function login(username, password) {
         request: 1
       }
     }
-  ])
+  ]).then(result => { // 获取朋友的聊天记录
+    data = result;
+    const promises = result[0].friend.map(el => {
+      return ChatModel.find({
+        $or: [
+          {
+            sendOne: username,
+            receiveOne: el.friend
+          },
+          {
+            sendOne: el.friend,
+            receiveOne: username
+          }
+        ]
+      })
+    })
+    return Promise.all(promises)
+  }).then(arr => {
+    for(let i in arr) {
+      data[0].friend[i].chat = arr[i][arr[i].length - 1]
+    }
+    return data
+  })
 }
 
 // 注册
