@@ -20,23 +20,26 @@ function login(username, password) {
     }
   ]).then(result => { // 获取朋友的聊天记录
     data = result;
-    const promises = result[0].friend.map(el => {
-      return ChatModel.find({
-        $or: [
-          {
-            sendOne: username,
-            receiveOne: el.friend
-          },
-          {
-            sendOne: el.friend,
-            receiveOne: username
-          }
-        ]
+    if (result.length) {
+      const promises = result[0].friend.map(el => {
+        return ChatModel.find({
+          $or: [{
+              sendOne: username,
+              receiveOne: el.friend
+            },
+            {
+              sendOne: el.friend,
+              receiveOne: username
+            }
+          ]
+        })
       })
-    })
-    return Promise.all(promises)
+      return Promise.all(promises)
+    } else {
+      return []
+    }
   }).then(arr => {
-    for(let i in arr) {
+    for (let i in arr) {
       data[0].friend[i].chat = arr[i][arr[i].length - 1]
     }
     return data
@@ -118,13 +121,16 @@ async function agree(agreeObj, requestObj) {
 
 // 上传头像
 function upload(id, avatar) {
-  return UserModel.updateOne({ '_id': id }, { avatar })
+  return UserModel.updateOne({
+    '_id': id
+  }, {
+    avatar
+  })
 }
 
 // 获取最新头像
 function getAvatar(arr) {
-  return UserModel.aggregate([
-    {
+  return UserModel.aggregate([{
       $match: {
         $or: arr
       }

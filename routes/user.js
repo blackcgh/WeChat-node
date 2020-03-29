@@ -1,6 +1,7 @@
 const express = require('express');
 const formidable = require('formidable')
 const fs = require('fs')
+const os = require('os')
 const {
   login,
   register,
@@ -120,7 +121,7 @@ router.post('/upload', async (req, res, next) => {
   form.uploadDir = './public/images/';
   form.parse(req, (err, fields, files) => {
     const id = Object.keys(files)[0];
-    const avatar = 'http://localhost/images/' + id;
+    const avatar = 'http://' + getIPAddress() + '/images/' + id;
     const path = './public/images/' + id;
     fs.rename(files[id].path, path, async function (err) {
       if (err) console.log(err);
@@ -128,6 +129,19 @@ router.post('/upload', async (req, res, next) => {
       res.json(new SuccessModel('上传成功'))
     })
   })
+  // 获取本机ip地址
+  function getIPAddress(){
+    const interfaces = os.networkInterfaces();
+    for(const devName in interfaces){
+        const iface = interfaces[devName];
+        for(let i=0;i<iface.length;i++){
+            let alias = iface[i];
+            if(alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal){
+                return alias.address;
+            }
+        }
+    }
+  }
 })
 
 module.exports = router;
